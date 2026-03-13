@@ -1,21 +1,40 @@
 # CRM Amtel Automator – Chrome Extension Guide
 
-This tool is a **Chrome extension** that adds easy-to-use buttons to your browser when you're on the Amtel CRM website. No coding needed—just click buttons to automate registration and activation!
+This is a **Chrome extension** that handles the entire card activation process automatically on your browser when you're on the Amtel CRM website.
+Instead of clicking through multiple screens and typing information, the extension does all the work for you with just one click.
 
 <img width="491" height="393" alt="Untitled" src="https://github.com/user-attachments/assets/c1be79e0-102e-42f1-9426-0a10894bfd70" />
+
+
 
 ---
 
 ## 🛠️ How to Install
+Step 1: Download the Extension Files
+Go to my GitHub page: [Add your GitHub link here]
+Click the green "Code" button
+Select "Download ZIP"
+Extract the ZIP file to a folder on your computer
 
-1. Open **Google Chrome**
-2. Go to `chrome://extensions`
-3. Turn on **"Developer mode"** (top-right toggle)
-4. Click **"Load unpacked"**
-5. Select the folder containing this project
-6. Pin the extension (click puzzle icon → pin 📌 next to "Amtel Automator")
+Step 2: Open Chrome Extensions Page
+Open Google Chrome
+Type chrome://extensions/ in the address bar and press Enter
+Or click the three dots menu → More Tools → Extensions
 
-> ✅ You’ll see the extension icon only when visiting the Amtel CRM site.
+Step 3: Enable Developer Mode
+Look for the "Developer mode" toggle switch in the top-right corner
+Click it to turn it ON
+
+Step 4: Load the Extension
+Click the "Load unpacked" button that appears
+Select the folder where you extracted the files
+Click "Select Folder"
+
+Step 5: Check Installation
+You should now see "CRM Amtel Automator" in your extensions list
+The extension icon should appear in your Chrome toolbar (top-right)
+
+> ✅ DOne
 
 ---
 
@@ -32,10 +51,10 @@ This tool is a **Chrome extension** that adds easy-to-use buttons to your browse
   → Checks "Prepaid"  
   → Attaches "Base Plan"  
   → Picks an unused MSISDN (phone number)  
-  → Asks you to enter **7-digit ICCID suffix** (e.g., `1234567`)  
-  → Logs the activation securely
+  → Asks you to enter **7-digit ICCID suffix** (e.g., `1234567`)
+  → Asks you to enter **7-digit MSIDN suffix** (e.g., `1234567`)  
+  → Checks if phone numbers already exist in MCASH
 
-> 💡 You’ll get a prompt: *"Enter ICCID suffix (7 digits)"* — type only the last 7 digits of the SIM’s ICCID.
 
 ### 🔹 Step 3: Activate Subscriber
 - After Page 2 completes, click **"Next & Activate"**  
@@ -43,34 +62,6 @@ This tool is a **Chrome extension** that adds easy-to-use buttons to your browse
   → Searches for the subscriber  
   → Clicks **Activate**  
   → Shows success/failure message
-
-### 🔹 Step 4: Handle Errors (If Needed)
-- If ICCID wasn’t accepted, click **"Retry ICCID"**  
-  → Re-enter the 7 digits  
-  → System safely retries without losing your data
-
----
-
-## 📊 Reporting & Maintenance
-
-| Button | What It Does |
-|-------|--------------|
-| **Export Report (Detailed)** | Downloads full activation log with dates, ICCIDs, and MSISDNs |
-| **Export Report (CSV)** | Exports to Excel-friendly format |
-| **Export Report (Simple)** | Shows daily activation counts |
-| **Clear All Logs** | Deletes local history (⚠️ cannot be undone!) |
-
-> 📁 Reports are saved automatically to your **Downloads** folder.
-
----
-
-## ⚠️ Important Notes
-
-- **Only works on the official Amtel CRM site**
-- **Always verify** auto-filled data before final submission
-- **ICCID must be 7 digits** — no spaces, letters, or full numbers
-- Your activation history is stored **only on your computer** (not shared)
-- If buttons don’t work, refresh the CRM page and try again
 
 ---
 
@@ -83,4 +74,7 @@ This tool is a **Chrome extension** that adds easy-to-use buttons to your browse
 
 ---
 
-✅ **You’re ready!** Just open the CRM, click the extension buttons, and register subscribers in seconds.
+Contact: 0717102026 & 0716408296
+
+Version: 3.0
+Last Updated: March 2026
