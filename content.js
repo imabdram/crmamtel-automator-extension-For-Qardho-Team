@@ -478,70 +478,87 @@ async function handle_ICCID() {
         }
       }
       
-      // Try to select the first checkbox (usually the search result)
-      let selectedCheckbox = null;
-      let capturedIccid = null;
-      
-      // Try to find checkbox in first row
-      if (checkboxes.length > 0) {
-        selectedCheckbox = checkboxes[0];
-        
-        // Extract ICCID from the row
-        const iccidRow = selectedCheckbox.closest('tr');
-        const iccidCell = iccidRow?.cells[1] || 
-                          iccidRow?.querySelector('td:nth-child(2)') || 
-                          iccidRow?.querySelector('td');
-        
-        if (iccidCell) {
-          let rawIccid = iccidCell.textContent.trim().replace(/\D/g, '');
-          capturedIccid = rawIccid;
-        }
+    let selectedCheckbox = null;
+let capturedIccid = null;
+
+// Try to find checkbox in first row
+if (checkboxes.length > 0) {
+  selectedCheckbox = checkboxes[0];
+
+  const iccidRow = selectedCheckbox.closest('tr');
+  const iccidCell =
+    iccidRow?.cells[1] ||
+    iccidRow?.querySelector('td:nth-child(2)') ||
+    iccidRow?.querySelector('td');
+
+  if (iccidCell) {
+    let rawIccid = iccidCell.textContent.trim().replace(/\D/g, '');
+    capturedIccid = rawIccid;
+  }
+}
+
+// If first checkbox fails, try to find exact match in results
+if (!capturedIccid) {
+  for (let i = 0; i < checkboxes.length; i++) {
+    const checkbox = checkboxes[i];
+    const iccidRow = checkbox.closest('tr');
+    const iccidCell =
+      iccidRow?.cells[1] ||
+      iccidRow?.querySelector('td:nth-child(2)') ||
+      iccidRow?.querySelector('td');
+
+    if (iccidCell) {
+      let rawIccid = iccidCell.textContent.trim().replace(/\D/g, '');
+      if (rawIccid === searchIccid) {
+        selectedCheckbox = checkbox;
+        capturedIccid = rawIccid;
+        break;
       }
-      
-      // If first checkbox fails, try to find exact match in results
-      if (!capturedIccid) {
-        for (let i = 0; i < checkboxes.length; i++) {
-          const checkbox = checkboxes[i];
-          const iccidRow = checkbox.closest('tr');
-          const iccidCell = iccidRow?.cells[1] || 
-                            iccidRow?.querySelector('td:nth-child(2)') || 
-                            iccidRow?.querySelector('td');
-          
-          if (iccidCell) {
-            let rawIccid = iccidCell.textContent.trim().replace(/\D/g, '');
-            
-            // Check if this matches our search
-            if (rawIccid.includes(searchIccid) || rawIccid.endsWith(cleanSuffix)) {
-              selectedCheckbox = checkbox;
-              capturedIccid = rawIccid;
-              break;
-            }
-          }
-        }
-      }
-      
-      if (!selectedCheckbox || !capturedIccid) {
-        const retryChoice = confirm("❌ Could not select ICCID from search results.\n\nClick OK to try again, or Cancel to stop.");
-        if (retryChoice) {
-          continue; // Try again
-        } else {
-          return false; // User chose to stop
-        }
-      }
-      
-      // Select the checkbox
-      selectedCheckbox.checked = true;
-      ["click", "input", "change"].forEach((t) =>
-        selectedCheckbox.dispatchEvent(new Event(t, { bubbles: true }))
-      );
-      
-      gloable_icc_id = capturedIccid;
-      console.log(`📱 Selected ICCID from search:`, gloable_icc_id);
-      
-      // Save ICCID to log immediately without UI detection
-      saveIccid(gloable_icc_id, { msisdn: gloable_msisdn });
-      console.log("✅ ICCID saved to log.");
-      
+    }
+  }
+}
+
+if (!selectedCheckbox || !capturedIccid) {
+  const retryChoice = confirm(
+    `Could not select ICCID from search results.\n` +
+    `Searched for: ${searchIccid}\n\n` +
+    `OK = try again, Cancel = stop.`
+  );
+  if (retryChoice) continue;
+  return false;
+}
+
+// ✅ compare only after capturedIccid has value
+const normalizedSearchIccid = String(searchIccid).replace(/\D/g, '');
+const normalizedCapturedIccid = String(capturedIccid).replace(/\D/g, '');
+
+if (normalizedCapturedIccid !== normalizedSearchIccid) {
+  console.warn(`❌ ICCID mismatch. Searched: ${normalizedSearchIccid}, Found: ${normalizedCapturedIccid}`);
+  alert(
+    `❌ ICCID mismatch!\n\n` +
+    `Searched: ${normalizedSearchIccid}\n` +
+    `Found: ${normalizedCapturedIccid}\n\n` +
+    `The script will NOT select this row. Please try again.`
+  );
+
+  searchInput.value = '';
+  ['input', 'change', 'keyup'].forEach(e =>
+    searchInput.dispatchEvent(new Event(e, { bubbles: true }))
+  );
+
+  continue;
+}
+
+// Select the checkbox only after exact match
+selectedCheckbox.checked = true;
+['click', 'input', 'change'].forEach(t =>
+  selectedCheckbox.dispatchEvent(new Event(t, { bubbles: true }))
+);
+
+gloable_icc_id = capturedIccid;
+console.log("✅ Selected ICCID from search:", gloable_icc_id);
+
+      // Logging moved to page2() after MSISDN is chosen
       found = true;
     }
   }
@@ -689,7 +706,7 @@ async function addMsisdnSeries() {
     );
 
     gloable_msisdn = capturedMsisdn;
-    console.log(`📱 Selected MSISDN from row ${selectedIdx + 1}:`, gloable_msisdn);
+    console.log(`📱 verification  MSISDN from row ${selectedIdx + 1}:`, gloable_msisdn);
     
   } else {
     // SEARCH METHOD - Ask user for last 7 digits, auto-add 25271 prefix with retry until found
@@ -812,7 +829,20 @@ async function addMsisdnSeries() {
       console.log(`📱 Selected MSISDN from search:`, gloable_msisdn);
       
       // =========================================
-// MCASH VERIFICATION - ADDED HERE
+
+      // Ask if we should run MCASH verification for this MSISDN
+    const wantMcash = confirm(
+      `📜 Run MCASH verification for MSISDN ${gloable_msisdn}?\n\nOK = Verify with MCASH\nCancel = Skip MCASH and continue`
+    );
+
+    if (!wantMcash) {
+      console.log('⏭ Skipping MCASH verification by user choice. Keeping MSISDN and continuing...');
+      // Mark as found and break out of the while (!found) loop
+      found = true;
+      break;
+    }
+
+      // MCASH VERIFICATION - ADDED HERE
 // =========================================
 console.log('🔍 Starting MCASH verification for selected MSISDN...');
 
